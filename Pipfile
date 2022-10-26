@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://mirror.baidu.com/pypi/simple"
+verify_ssl = true
+name = "mirrorbaidu"
+
+[packages]
+paddlepaddle = {version = "*", index = "mirrorbaidu"}
+paddleocr = ">=2.0.1"
+googletrans = "==3.1.0a0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
