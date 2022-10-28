@@ -61,17 +61,20 @@ class Paragraph:
         text = ''
         for line in self.lines:
             text += line.text + ' '
+        # print(text)
+        # print("========================================================")
         self.text = googletrans.Translator().translate(text.lower(), dest='vi').text
         
     def draw(self, img):
-        fontSize = (self.eY - self.y) * 0.95 / self.lineAmount
+        fontSize = (self.eY - self.y)  / self.lineAmount
         lineHeight = (self.eY - self.y)/self.lineAmount
+        self.h = abs(int(self.y - self.lines[-1].enPoint[1]))
         self.lineHeight = lineHeight
 
-        bg = Image.new(mode="RGBA", size=(abs(int(self.w)), abs(int(self.y - self.lines[-1].stPoint[1]))), color=(235, 255, 235))
+        bg = Image.new(mode="RGBA", size=(abs(int(self.w)), abs(int(self.y - self.lines[-1].enPoint[1]))), color=(235, 255, 235))
         img.paste(bg, (int(self.x), int(self.y)))  
-
-        self.insertText(self.getFontSize(fontSize), img)
+        fontsize = self.getNFontSize();
+        self.insertText(fontsize, img)
     
     def getFontSize(self, nFontSize):
         fontsize = abs(int(nFontSize))
@@ -79,27 +82,64 @@ class Paragraph:
         while font.getsize(self.text)[0] > self.w * self.lineAmount:
             fontsize -= 2
             font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', fontsize)
+
         return fontsize
+
+    def getNFontSize(self):
+
+        fontsize = abs(int(self.h))
+        lineAmount = 1
+        font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', fontsize)
+
+        while font.getsize(self.text)[0] > self.w * lineAmount:
+            fontsize -= 2
+            font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', fontsize)
+            lineAmount = int(self.h/fontsize)
+            # print( "fontsize: ", fontsize, " line amount: ", lineAmount ," Text size: ", font.getsize(self.text)[0], " Width: ", self.w * lineAmount)
+        self.lineAmount = lineAmount
+        self.lineHeight = int(self.h/lineAmount)
+        return fontsize
+
 
     def insertText(self, fontSize, img):
         pos = 0
         words = self.text.split()
         d = ImageDraw.Draw(img)
+        # print("Line amount: ", self.lineAmount)
+        # print("Height: ", self.h)
+        # print("Width: ", self.w)
+        # print(self.text)
+
         for i in range(self.lineAmount):
             font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', fontSize-2)
             textInLine = words[pos]
             for j in range(pos + 1,len(words)):
-                if font.getsize(textInLine + ' ' + words[j])[0] <= self.w + font.getsize(words[j])[0]/2 :
-                    textInLine +=  ' ' + words[j]
-                else:
-                    d.text((int(self.x), int(self.y + i * self.lineHeight) ), textInLine, font=font, fill=(0, 0, 0))
-                    pos = j
-                    break
                 if j==len(words)-1:
+                    # print(textInLine)
+                    textInLine +=  ' ' + words[j]
+                    # print(i, " : ", textInLine)
+                    tF = fontSize
+                    while font.getsize(textInLine)[0] > self.w:
+                        tF -= 2
+                        font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', tF)
+                    font = ImageFont.truetype(r'font/Arimo-VariableFont_wght.ttf', tF+1)
                     d.text((int(self.x), int(self.y + i * self.lineHeight) ), textInLine, font=font, fill=(0, 0, 0))
+                    # print('-----------------------------E-------------------------------')
                     pos = j
                     return
-
+                if font.getsize(textInLine + ' ' + words[j])[0] <= self.w :
+                    textInLine +=  ' ' + words[j]
+                else:
+                    # textInLine +=  ' ' + words[j]
+                    # print(i, " : ", textInLine)
+                    d.text((int(self.x), int(self.y + i * self.lineHeight) ), textInLine, font=font, fill=(0, 0, 0))
+                    # print(textInLine)
+                    # print('------------------------------------------------------------')
+                    pos = j
+                    break
+            # print(pos+1)
+            # print(i, " : ")
+        # print('=====================================================')
 ocr = PaddleOCR(use_angle_cls=True, lang='en', show_log = False) 
 
 def translate(imgPath, savePath):
@@ -138,19 +178,19 @@ def translate(imgPath, savePath):
 
 
 
-# translate('images/1.jpg', 'output/1.jpg')
-# translate('images/2.jpg', 'output/2.jpg')
-# translate('images/3.jpg', 'output/3.jpg')
-# translate('images/4.jpg', 'output/4.jpg')
-# translate('images/5.jpg', 'output/5.jpg')
-# translate('images/6.jpg', 'output/6.jpg')
-# translate('images/7.jpg', 'output/7.jpg')
-# translate('images/8.jpg', 'output/8.jpg')
-# translate('images/9.jpg', 'output/9.jpg')
-# translate('images/10.jpg', 'output/10.jpg')
+translate('images/1.jpg', 'output/1.jpg')
+translate('images/2.jpg', 'output/2.jpg')
+translate('images/3.jpg', 'output/3.jpg')
+translate('images/4.jpg', 'output/4.jpg')
+translate('images/5.jpg', 'output/5.jpg')
+translate('images/6.jpg', 'output/6.jpg')
+translate('images/7.jpg', 'output/7.jpg')
+translate('images/8.jpg', 'output/8.jpg')
+translate('images/9.jpg', 'output/9.jpg')
+translate('images/10.jpg', 'output/10.jpg')
 translate('images/11.jpg', 'output/11.jpg')
-# translate('images/12.jpg', 'output/12.jpg')
-# translate('images/13.jpg', 'output/13.jpg')
-# translate('images/14.jpg', 'output/14.jpg')
-# translate('images/15.jpg', 'output/15.jpg')
-# translate('images/16.jpg', 'output/16.jpg')
+translate('images/12.jpg', 'output/12.jpg')
+translate('images/13.jpg', 'output/13.jpg')
+translate('images/14.jpg', 'output/14.jpg')
+translate('images/15.jpg', 'output/15.jpg')
+translate('images/16.jpg', 'output/16.jpg')
