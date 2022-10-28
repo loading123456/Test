@@ -67,9 +67,10 @@ class Paragraph:
         fontSize = (self.eY - self.y) * 0.95 / self.lineAmount
         lineHeight = (self.eY - self.y)/self.lineAmount
         self.lineHeight = lineHeight
-        for i in range(self.lineAmount):
-            bg = Image.new(mode="RGBA", size=(abs(int(self.w)), abs(int(fontSize))), color=(235, 255, 235))
-            img.paste(bg, (int(self.x), int(self.y + i * lineHeight)))  
+
+        bg = Image.new(mode="RGBA", size=(abs(int(self.w)), abs(int(self.y - self.lines[-1].stPoint[1]))), color=(235, 255, 235))
+        img.paste(bg, (int(self.x), int(self.y)))  
+
         self.insertText(self.getFontSize(fontSize), img)
     
     def getFontSize(self, nFontSize):
@@ -99,7 +100,7 @@ class Paragraph:
                     pos = j
                     return
 
-ocr = PaddleOCR(use_angle_cls=True, lang='en') 
+ocr = PaddleOCR(use_angle_cls=True, lang='en', show_log = False) 
 
 def translate(imgPath, savePath):
     print("=========================> ", imgPath," <=============================")
@@ -147,7 +148,7 @@ def translate(imgPath, savePath):
 # translate('images/8.jpg', 'output/8.jpg')
 # translate('images/9.jpg', 'output/9.jpg')
 # translate('images/10.jpg', 'output/10.jpg')
-# translate('images/11.jpg', 'output/11.jpg')
+translate('images/11.jpg', 'output/11.jpg')
 # translate('images/12.jpg', 'output/12.jpg')
 # translate('images/13.jpg', 'output/13.jpg')
 # translate('images/14.jpg', 'output/14.jpg')
